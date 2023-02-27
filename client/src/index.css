@@ -1,13 +1,13 @@
-body {
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+*, *:after, *:before{
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+  padding: 0;
+  box-sizing: border-box;
 }
 
-code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-    monospace;
+input[type='text'], input[type='email'], input[type='password']{
+  @apply w-full border my-2 py-2 px-3 rounded-lg outline-0
 }
