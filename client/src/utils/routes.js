@@ -22,5 +22,9 @@ export const privateRoutes = [
     {
         path: '/account/:subpage?',
         element: <Account />
+    },
+    {
+        path: '/account/:subpage/:action?',
+        element: <Account />
     }
 ]
