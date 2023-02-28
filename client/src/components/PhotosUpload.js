@@ -11,7 +11,7 @@ const PhotosUpload = ({placeForm, setPlaceForm}) => {
         })
             .then(({data:filename}) => {
                 setPhotoErrorLink(false)
-                setPlaceForm({...placeForm, addedPhotos: [...placeForm.addedPhotos, filename]})
+                setPlaceForm({...placeForm, photos: [...placeForm.photos, filename]})
                 setPhotoLink('')
             })
             .catch(() => {
@@ -32,7 +32,7 @@ const PhotosUpload = ({placeForm, setPlaceForm}) => {
         axios.post('/upload', data, {
             headers: {'Content-type': "multipart/form-data"}
         }).then(({data:filenames}) => {
-            setPlaceForm({...placeForm, addedPhotos: [...placeForm.addedPhotos, ...filenames]})
+            setPlaceForm({...placeForm, photos: [...placeForm.photos, ...filenames]})
         })
     }
 
@@ -57,8 +57,8 @@ const PhotosUpload = ({placeForm, setPlaceForm}) => {
             </div>
             <div className="grid grid-cols-3 gap-2 md:grid-cols-4 lg:grid-cols-5 mt-4 ">
                 {
-                    placeForm.addedPhotos.length > 0 &&
-                    placeForm.addedPhotos.map(link => {
+                    placeForm.photos.length > 0 &&
+                    placeForm.photos.map(link => {
                         return <div key={link}>
                             <img className="rounded-2xl h-full object-cover" src={"http://localhost:3333/uploads/" + link} alt=""/>
                         </div>

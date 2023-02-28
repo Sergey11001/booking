@@ -116,27 +116,14 @@ app.post('/upload', photosMiddleware.array('photos', 10), (req, res) => {
 })
 app.post('/places', (req, res) => {
     const {token} = req.cookies
-    const {title, address, addedPhotos, description, extraInfo, checkIn, checkOut, maxGuests, perks} = req.body
+    const {title, address, photos, description, extraInfo, checkIn, checkOut, maxGuests, perks} = req.body
     jwt.verify(token, jwtSecret, {}, (err, user) => {
-        console.log(user.id)
         if (err) res.json(err)
         const place = new Place({
             owner: user.id,
             title,
             address,
-            photos:addedPhotos,
-            description,
-            extraInfo,
-            checkIn,
-            perks,
-            checkOut,
-            maxGuests,
-        })
-        console.log({
-            owner: user.id,
-            title,
-            address,
-            photos:addedPhotos,
+            photos,
             description,
             extraInfo,
             checkIn,
@@ -151,6 +138,84 @@ app.post('/places', (req, res) => {
             res.send("Place created");
         })
     })
+
+})
+
+app.get('/places', (req, res) => {
+    const {token} = req.cookies
+    jwt.verify(token, jwtSecret, {}, (err, user) => {
+        if (err) res.json(err)
+        Place.find({owner: user.id}, (err, places) => {
+            if (err) res.status(404).json({
+                message: "Places not found"
+            })
+            console.log(places)
+            res.json(places)
+        })
+    })
+})
+
+app.get('/places/:id', (req, res) => {
+    const {id} = req.params
+    Place.findById(id, (err, place) => {
+        if (err) res.status(404).json({
+            message: "Place not found"
+        })
+        res.json(place)
+    })
+})
+
+app.put('/places/:id', (req, res) => {
+    const {id} = req.params
+    const {token} = req.cookies
+    const {
+        title,
+        address,
+        photos,
+        description,
+        extraInfo,
+        checkIn,
+        perks,
+        checkOut,
+        maxGuests
+    } = req.body
+
+    jwt.verify(token, jwtSecret, {}, (err, user) => {
+        if (err) res.json(err)
+        Place.findById(id, (err, place) => {
+            if (err) res.status(404).json({
+                message: "Place not found"
+            })
+            console.log(place.owner.toString(), user.id)
+            if(place.owner.toString() === user.id){
+                Place.findByIdAndUpdate({_id: id},
+                    {
+                        title,
+                        address,
+                        photos,
+                        description,
+                        extraInfo,
+                        checkIn,
+                        perks,
+                        checkOut,
+                        maxGuests
+                    },
+                    {new: true},
+                    (err, result) => {
+                        if (err) res.status(400).json({
+                            message: "Information not update"
+                        })
+                        res.json(result)
+                    }
+                )
+            }
+            else res.status(404).json({
+                message: "You can't update this"
+            })
+        })
+    })
+
+
 
 })
 
