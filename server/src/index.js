@@ -7,6 +7,7 @@ const bcrypt = require('bcryptjs')
 const jwt = require('jsonwebtoken')
 const fs = require('fs')
 const User = require('./models/User')
+const Place = require('./models/Place')
 const dotenv = require('dotenv')
 const multer = require('multer')
 const {json} = require("express");
@@ -50,7 +51,6 @@ app.post('/login', (req, res) => {
         }
         const passwordOk = bcrypt.compareSync(password, user.password)
         if (passwordOk) {
-            console.log(user)
             jwt.sign(
                 {email: user.email, id: user._id, name: user.name},
                 jwtSecret,
@@ -114,6 +114,46 @@ app.post('/upload', photosMiddleware.array('photos', 10), (req, res) => {
     })
     res.json(uploadedFiles)
 })
+app.post('/places', (req, res) => {
+    const {token} = req.cookies
+    const {title, address, addedPhotos, description, extraInfo, checkIn, checkOut, maxGuests, perks} = req.body
+    jwt.verify(token, jwtSecret, {}, (err, user) => {
+        console.log(user.id)
+        if (err) res.json(err)
+        const place = new Place({
+            owner: user.id,
+            title,
+            address,
+            photos:addedPhotos,
+            description,
+            extraInfo,
+            checkIn,
+            perks,
+            checkOut,
+            maxGuests,
+        })
+        console.log({
+            owner: user.id,
+            title,
+            address,
+            photos:addedPhotos,
+            description,
+            extraInfo,
+            checkIn,
+            perks,
+            checkOut,
+            maxGuests,
+        })
+        place.save((err) => {
+            if (err) return res.status(400).json({
+                message: "Incorrect data"
+            });
+            res.send("Place created");
+        })
+    })
+
+})
+
 
 app.listen(PORT, () => {
     console.log("Server is starting on port", PORT)
